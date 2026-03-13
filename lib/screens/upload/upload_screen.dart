@@ -52,36 +52,51 @@ class _UploadScreenState extends State<UploadScreen>
   }
 
   Future<void> _pickAudio() async {
-    final res = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: const ['mp3', 'm4a', 'wav', 'aac', 'ogg'],
-    );
-    final path = res?.files.single.path;
-    if (path == null) return;
-    setState(() {
-      _audioFile = File(path);
-      _error = null;
-    });
+    try {
+      final res = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['mp3', 'm4a', 'wav', 'aac', 'ogg'],
+      );
+      final path = res?.files.single.path;
+      if (path == null) return;
+      setState(() {
+        _audioFile = File(path);
+        _error = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = 'No se pudo seleccionar el audio: $e');
+    }
   }
 
   Future<void> _pickCover() async {
-    final picker = ImagePicker();
-    final x = await picker.pickImage(source: ImageSource.gallery);
-    if (x == null) return;
-    setState(() {
-      _coverFile = File(x.path);
-      _error = null;
-    });
+    try {
+      final picker = ImagePicker();
+      final x = await picker.pickImage(source: ImageSource.gallery);
+      if (x == null) return;
+      setState(() {
+        _coverFile = File(x.path);
+        _error = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = 'No se pudo seleccionar la imagen: $e');
+    }
   }
 
   Future<void> _pickVideo() async {
-    final picker = ImagePicker();
-    final x = await picker.pickVideo(source: ImageSource.gallery);
-    if (x == null) return;
-    setState(() {
-      _videoFile = File(x.path);
-      _error = null;
-    });
+    try {
+      final picker = ImagePicker();
+      final x = await picker.pickVideo(source: ImageSource.gallery);
+      if (x == null) return;
+      setState(() {
+        _videoFile = File(x.path);
+        _error = null;
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _error = 'No se pudo seleccionar el video: $e');
+    }
   }
 
   Future<void> _uploadMusic() async {
@@ -154,9 +169,12 @@ class _UploadScreenState extends State<UploadScreen>
         _progress = 0;
       });
     } catch (e) {
-      setState(() => _error = e.toString());
+      if (!mounted) return;
+      setState(() => _error = _mapUploadError(e));
     } finally {
-      setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
   }
 
@@ -203,10 +221,34 @@ class _UploadScreenState extends State<UploadScreen>
         _progress = 0;
       });
     } catch (e) {
-      setState(() => _error = e.toString());
+      if (!mounted) return;
+      setState(() => _error = _mapUploadError(e));
     } finally {
-      setState(() => _busy = false);
+      if (mounted) {
+        setState(() => _busy = false);
+      }
     }
+  }
+
+  String _mapUploadError(Object e) {
+    if (e is FirebaseException) {
+      final code = e.code;
+      if (code == 'unavailable' || code == 'deadline-exceeded') {
+        return 'Firestore no está disponible. Inténtalo de nuevo en unos segundos.';
+      }
+      if (code == 'permission-denied') {
+        return 'Permiso denegado en Firestore/Storage. Revisa las reglas de Firebase.';
+      }
+      if (code == 'unauthenticated') {
+        return 'Tu sesión expiró. Vuelve a iniciar sesión.';
+      }
+      return 'Error Firebase ($code): ${e.message ?? e.toString()}';
+    }
+    final msg = e.toString();
+    if (msg.contains('cloud_firestore/unavailable')) {
+      return 'Firestore no está disponible. Inténtalo de nuevo en unos segundos.';
+    }
+    return msg;
   }
 
   @override
