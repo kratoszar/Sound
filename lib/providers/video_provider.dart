@@ -152,11 +152,17 @@ class VideoProvider extends ChangeNotifier {
     final t = text.trim();
     if (t.isEmpty) return;
 
-    await _firestore.videos.doc(videoId).collection('comments').add({
-      'userId': uid,
-      'text': t,
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+    try {
+      await _firestore.videos.doc(videoId).collection('comments').add({
+        'userId': uid,
+        'text': t,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Error al publicar comentario: $e');
+      }
+    }
   }
 
   Future<void> followUser(String targetUserId) async {

@@ -64,6 +64,12 @@ class AudioService {
     }
   }
 
+  Future<void> stop() async {
+    await _player.stop();
+    _currentTrack = null;
+    _positionController.add(Duration.zero);
+  }
+
   Future<void> dispose() async {
     await _player.dispose();
     await _playerStateController.close();

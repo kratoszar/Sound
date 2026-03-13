@@ -56,6 +56,7 @@ class HistoryScreen extends StatelessWidget {
               final audioUrl = (d['audioUrl'] as String?) ?? '';
               final coverUrl = d['coverUrl'] as String?;
               final trackId = (d['trackId'] as String?) ?? docs[i].id;
+              final durationMs = (d['duration'] as int?) ?? 0;
 
               return ListTile(
                 title: Text(title),
@@ -70,7 +71,7 @@ class HistoryScreen extends StatelessWidget {
                     audioUrl: audioUrl,
                     coverUrl: coverUrl,
                     likesCount: 0,
-                    duration: Duration.zero,
+                    duration: Duration(milliseconds: durationMs),
                     createdAt: DateTime.fromMillisecondsSinceEpoch(0),
                   );
                   context.read<MusicProvider>().playTrack(track);

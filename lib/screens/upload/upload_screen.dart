@@ -124,10 +124,11 @@ class _UploadScreenState extends State<UploadScreen>
 
     try {
       final doc = FirestoreService.instance.tracks.doc();
-      final audioUrl = await CloudinaryService.instance.uploadAudio(
+      final audioResult = await CloudinaryService.instance.uploadAudio(
         _audioFile!,
         onProgress: (p) => setState(() => _progress = p * 0.8),
       );
+      final audioUrl = audioResult.url;
 
       String? coverUrl;
       if (_coverFile != null) {
@@ -146,7 +147,7 @@ class _UploadScreenState extends State<UploadScreen>
         'audioUrl': audioUrl,
         'coverUrl': coverUrl,
         'likes': 0,
-        'duration': 0,
+        'duration': audioResult.duration?.inMilliseconds ?? 0,
         'createdAt': FieldValue.serverTimestamp(),
       });
 
@@ -191,14 +192,15 @@ class _UploadScreenState extends State<UploadScreen>
     try {
       final doc = FirestoreService.instance.videos.doc();
 
-      final url = await CloudinaryService.instance.uploadVideo(
+      final videoResult = await CloudinaryService.instance.uploadVideo(
         _videoFile!,
         onProgress: (p) => setState(() => _progress = p),
       );
 
       await doc.set({
         'userId': uid,
-        'videoUrl': url,
+        'videoUrl': videoResult.url,
+        'duration': videoResult.duration?.inMilliseconds ?? 0,
         'caption': _captionCtrl.text.trim(),
         'likes': 0,
         'createdAt': FieldValue.serverTimestamp(),

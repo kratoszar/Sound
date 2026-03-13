@@ -6,6 +6,7 @@ class AppVideo {
   final String videoUrl;
   final String caption;
   final int likesCount;
+  final Duration duration;
   final DateTime createdAt;
 
   const AppVideo({
@@ -14,6 +15,7 @@ class AppVideo {
     required this.videoUrl,
     required this.caption,
     required this.likesCount,
+    required this.duration,
     required this.createdAt,
   });
 
@@ -25,6 +27,9 @@ class AppVideo {
       videoUrl: data['videoUrl'] as String? ?? '',
       caption: data['caption'] as String? ?? '',
       likesCount: (data['likes'] as int?) ?? 0,
+      duration: Duration(
+        milliseconds: (data['duration'] as int?) ?? 0,
+      ),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ??
           DateTime.fromMillisecondsSinceEpoch(0),
     );
@@ -36,6 +41,7 @@ class AppVideo {
       'videoUrl': videoUrl,
       'caption': caption,
       'likes': likesCount,
+      'duration': duration.inMilliseconds,
       'createdAt': Timestamp.fromDate(createdAt),
     };
   }
@@ -46,6 +52,7 @@ class AppVideo {
     String? videoUrl,
     String? caption,
     int? likesCount,
+    Duration? duration,
     DateTime? createdAt,
   }) {
     return AppVideo(
@@ -54,6 +61,7 @@ class AppVideo {
       videoUrl: videoUrl ?? this.videoUrl,
       caption: caption ?? this.caption,
       likesCount: likesCount ?? this.likesCount,
+      duration: duration ?? this.duration,
       createdAt: createdAt ?? this.createdAt,
     );
   }

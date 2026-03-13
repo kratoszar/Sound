@@ -178,12 +178,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ).animate().fadeIn(duration: 500.ms).scale(begin: const Offset(0.98, 0.98), end: const Offset(1, 1)),
-                  const SizedBox(height: 18),
-                  Text(
-                    'Tip: configura Firebase (google-services.json) antes de ejecutar.',
-                    textAlign: TextAlign.center,
-                    style: Theme.of(context).textTheme.bodySmall,
-                  ),
                 ],
               ),
             ),

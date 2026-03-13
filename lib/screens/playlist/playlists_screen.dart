@@ -18,8 +18,7 @@ class PlaylistsScreen extends StatelessWidget {
     }
 
     final playlistsQuery = FirestoreService.instance.playlists
-        .where('userId', isEqualTo: uid)
-        .orderBy('createdAt', descending: true);
+        .where('userId', isEqualTo: uid);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -50,7 +49,12 @@ class PlaylistsScreen extends StatelessWidget {
               ),
             );
           }
-          final items = docs.map((d) => Playlist.fromFirestore(d)).toList();
+          final items = docs
+              .map((d) => Playlist.fromFirestore(d))
+              .toList()
+            ..sort(
+              (a, b) => b.createdAt.compareTo(a.createdAt),
+            );
           return ListView.builder(
             itemCount: items.length,
             itemBuilder: (context, i) {
@@ -100,12 +104,22 @@ class PlaylistsScreen extends StatelessWidget {
     ctrl.dispose();
     if (title.isEmpty) return;
 
-    await FirestoreService.instance.playlists.add({
-      'userId': uid,
-      'title': title,
-      'tracks': <String>[],
-      'createdAt': FieldValue.serverTimestamp(),
-    });
+    try {
+      await FirestoreService.instance.playlists.add({
+        'userId': uid,
+        'title': title,
+        'tracks': <String>[],
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No se pudo crear la playlist: $e'),
+          ),
+        );
+      }
+    }
   }
 
   void _openPlaylist(BuildContext context, Playlist playlist) {

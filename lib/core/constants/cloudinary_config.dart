@@ -2,7 +2,7 @@ class CloudinaryConfig {
   CloudinaryConfig._();
 
   /// Nombre del cloud de Cloudinary.
-  static const String cloudName = 'm46ma3tm';
+  static const String cloudName = 'dg4pmmum5';
 
   /// Upload preset unsigned para media (video/audio/imágenes).
   /// Crea este preset en Cloudinary: Settings > Upload > Add upload preset > Unsigned.

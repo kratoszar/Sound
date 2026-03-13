@@ -5,12 +5,22 @@ import 'package:http/http.dart' as http;
 
 import '../core/constants/cloudinary_config.dart';
 
+class CloudinaryUploadResult {
+  final String url;
+  final Duration? duration;
+
+  const CloudinaryUploadResult({
+    required this.url,
+    this.duration,
+  });
+}
+
 class CloudinaryService {
   CloudinaryService._();
 
   static final CloudinaryService instance = CloudinaryService._();
 
-  Future<String> uploadVideo(
+  Future<CloudinaryUploadResult> uploadVideo(
     File file, {
     void Function(double progress)? onProgress,
   }) {
@@ -22,7 +32,7 @@ class CloudinaryService {
     );
   }
 
-  Future<String> uploadAudio(
+  Future<CloudinaryUploadResult> uploadAudio(
     File file, {
     void Function(double progress)? onProgress,
   }) {
@@ -38,16 +48,17 @@ class CloudinaryService {
   Future<String> uploadImage(
     File file, {
     void Function(double progress)? onProgress,
-  }) {
-    return _upload(
+  }) async {
+    final result = await _upload(
       file: file,
       resourceType: 'image',
       folder: CloudinaryConfig.coverFolder,
       onProgress: onProgress,
     );
+    return result.url;
   }
 
-  Future<String> _upload({
+  Future<CloudinaryUploadResult> _upload({
     required File file,
     required String resourceType,
     required String folder,
@@ -97,7 +108,19 @@ class CloudinaryService {
     if (url == null || url.isEmpty) {
       throw Exception('Respuesta de Cloudinary sin secure_url: $body');
     }
+
+    Duration? duration;
+    final rawDuration = json['duration'];
+    if (rawDuration is num) {
+      final seconds = rawDuration.toDouble();
+      if (seconds > 0) {
+        duration = Duration(
+          milliseconds: (seconds * 1000).round(),
+        );
+      }
+    }
+
     onProgress?.call(1.0);
-    return url;
+    return CloudinaryUploadResult(url: url, duration: duration);
   }
 }

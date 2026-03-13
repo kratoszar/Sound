@@ -22,6 +22,14 @@ class VideoCard extends StatelessWidget {
     required this.isFollowing,
   });
 
+  String _fmtDuration(Duration d) {
+    if (d.inMilliseconds <= 0) return '0:00';
+    final m = d.inMinutes;
+    final s = d.inSeconds % 60;
+    final ss = s.toString().padLeft(2, '0');
+    return '$m:$ss';
+  }
+
   @override
   Widget build(BuildContext context) {
     final vp = controller;
@@ -85,6 +93,24 @@ class VideoCard extends StatelessWidget {
                   Colors.transparent,
                   Colors.black.withValues(alpha: 0.55),
                 ],
+              ),
+            ),
+          ),
+          Positioned(
+            left: 16,
+            bottom: 16,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: Colors.black.withValues(alpha: 0.55),
+                borderRadius: BorderRadius.circular(999),
+              ),
+              child: Text(
+                _fmtDuration(video.duration),
+                style: Theme.of(context)
+                    .textTheme
+                    .labelSmall
+                    ?.copyWith(color: AppColors.textPrimary),
               ),
             ),
           ),

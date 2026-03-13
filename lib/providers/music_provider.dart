@@ -93,6 +93,11 @@ class MusicProvider extends ChangeNotifier {
 
   Future<void> seek(Duration p) => _audio.seek(p);
 
+  Future<void> stop() async {
+    await _audio.stop();
+    notifyListeners();
+  }
+
   Future<void> toggleLike(Track track) async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;

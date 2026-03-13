@@ -120,7 +120,12 @@ class _VideoFeedScreenState extends State<VideoFeedScreen> {
                     const SizedBox(width: 10),
                     IconButton(
                       onPressed: () async {
-                        await provider.postComment(videoId: videoId, text: textCtrl.text);
+                        final text = textCtrl.text;
+                        if (text.trim().isEmpty) return;
+                        await provider.postComment(
+                          videoId: videoId,
+                          text: text,
+                        );
                         textCtrl.clear();
                       },
                       icon: const Icon(Icons.send_rounded),

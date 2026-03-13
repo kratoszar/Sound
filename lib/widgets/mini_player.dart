@@ -91,6 +91,11 @@ class MiniPlayer extends StatelessWidget {
                   ),
                   color: AppColors.primary,
                 ),
+                IconButton(
+                  onPressed: music.stop,
+                  icon: const Icon(Icons.close_rounded),
+                  color: AppColors.textSecondary,
+                ),
               ],
             ),
             const SizedBox(height: 6),
