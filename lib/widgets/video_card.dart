@@ -26,54 +26,87 @@ class VideoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final vp = controller;
 
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        if (vp != null && vp.value.isInitialized)
-          FittedBox(
-            fit: BoxFit.cover,
-            child: SizedBox(
-              width: vp.value.size.width,
-              height: vp.value.size.height,
-              child: VideoPlayer(vp),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () async {
+        if (vp == null || !vp.value.isInitialized) return;
+        if (vp.value.isPlaying) {
+          await vp.pause();
+        } else {
+          // If it ended, start from beginning.
+          final dur = vp.value.duration;
+          if (dur != Duration.zero && vp.value.position >= dur) {
+            await vp.seekTo(Duration.zero);
+          }
+          await vp.play();
+        }
+      },
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          if (vp != null && vp.value.isInitialized)
+            FittedBox(
+              fit: BoxFit.cover,
+              child: SizedBox(
+                width: vp.value.size.width,
+                height: vp.value.size.height,
+                child: VideoPlayer(vp),
+              ),
+            )
+          else
+            const DecoratedBox(
+              decoration: BoxDecoration(color: AppColors.background),
+              child: Center(child: CircularProgressIndicator()),
             ),
-          )
-        else
-          const DecoratedBox(
-            decoration: BoxDecoration(color: AppColors.background),
-            child: Center(child: CircularProgressIndicator()),
-          ),
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [
-                Colors.black.withValues(alpha: 0.25),
-                Colors.transparent,
-                Colors.black.withValues(alpha: 0.55),
-              ],
+          // Overlay play icon when paused.
+          if (vp != null && vp.value.isInitialized && !vp.value.isPlaying)
+            Center(
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.35),
+                  borderRadius: BorderRadius.circular(999),
+                  border: Border.all(color: Colors.white.withValues(alpha: 0.12)),
+                ),
+                child: const Icon(
+                  Icons.play_arrow_rounded,
+                  size: 56,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ),
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.black.withValues(alpha: 0.25),
+                  Colors.transparent,
+                  Colors.black.withValues(alpha: 0.55),
+                ],
+              ),
             ),
           ),
-        ),
-        Positioned(
-          left: 16,
-          right: 84,
-          bottom: 28,
-          child: _CaptionBlock(video: video),
-        ),
-        Positioned(
-          right: 12,
-          bottom: 90,
-          child: _Actions(
-            likes: video.likesCount,
-            onTapLike: onTapLike,
-            onTapComments: onTapComments,
-            onTapFollow: onTapFollow,
-            isFollowing: isFollowing,
+          Positioned(
+            left: 16,
+            right: 84,
+            bottom: 28,
+            child: _CaptionBlock(video: video),
           ),
-        ),
-      ],
+          Positioned(
+            right: 12,
+            bottom: 90,
+            child: _Actions(
+              likes: video.likesCount,
+              onTapLike: onTapLike,
+              onTapComments: onTapComments,
+              onTapFollow: onTapFollow,
+              isFollowing: isFollowing,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

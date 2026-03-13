@@ -22,11 +22,28 @@ class VideoService {
 
     final controller = VideoPlayerController.networkUrl(Uri.parse(url));
     await controller.initialize();
-    controller.setLooping(true);
+    controller.setLooping(false);
+    _bindPauseOnEnd(controller);
 
     _controllers[videoId] = controller;
     _evictIfNeeded();
     return controller;
+  }
+
+  void _bindPauseOnEnd(VideoPlayerController controller) {
+    controller.addListener(() {
+      final v = controller.value;
+      if (!v.isInitialized) return;
+      final dur = v.duration;
+      if (dur == Duration.zero) return;
+
+      // When playback reaches the end, pause and stay on last frame.
+      final atEnd = v.position >= dur;
+      if (atEnd && v.isPlaying) {
+        controller.pause();
+        controller.seekTo(dur);
+      }
+    });
   }
 
   void _evictIfNeeded() {
