@@ -12,8 +12,16 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final user = auth.currentUser;
+    final fbUser = auth.firebaseUser;
     final showProfileLoading = auth.firebaseUser != null && auth.isProfileLoading;
     final profileError = auth.profileErrorMessage;
+
+    final displayName =
+        user?.name ?? fbUser?.displayName ?? (fbUser?.email ?? 'Usuario');
+    final email = user?.email ?? fbUser?.email ?? '';
+    final avatarUrl = user?.avatar ?? fbUser?.photoURL;
+    final fallbackInitial =
+        (user?.name ?? fbUser?.displayName ?? fbUser?.email ?? 'U');
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -66,9 +74,9 @@ class ProfileScreen extends StatelessWidget {
             Row(
               children: [
                 GradientAvatar(
-                  imageUrl: user?.avatar,
+                  imageUrl: avatarUrl,
                   size: 56,
-                  fallbackText: user?.name ?? 'U',
+                  fallbackText: fallbackInitial,
                 ),
                 const SizedBox(width: 14),
                 Expanded(
@@ -76,12 +84,12 @@ class ProfileScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        user?.name ?? 'Usuario',
+                        displayName,
                         style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        user?.email ?? '',
+                        email,
                         style: Theme.of(context).textTheme.bodyMedium,
                       ),
                     ],
