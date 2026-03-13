@@ -9,7 +9,6 @@ import 'package:image_picker/image_picker.dart';
 import '../../core/constants/app_colors.dart';
 import '../../services/cloudinary_service.dart';
 import '../../services/firestore_service.dart';
-import '../../services/storage_service.dart';
 
 class UploadScreen extends StatefulWidget {
   const UploadScreen({super.key});
@@ -125,21 +124,15 @@ class _UploadScreenState extends State<UploadScreen>
 
     try {
       final doc = FirestoreService.instance.tracks.doc();
-      final trackId = doc.id;
-
-      final audioUrl = await StorageService.instance.uploadFile(
-        file: _audioFile!,
-        path: 'tracks/$uid/$trackId/audio.${_audioFile!.path.split('.').last}',
-        contentType: 'audio/*',
+      final audioUrl = await CloudinaryService.instance.uploadAudio(
+        _audioFile!,
         onProgress: (p) => setState(() => _progress = p * 0.8),
       );
 
       String? coverUrl;
       if (_coverFile != null) {
-        coverUrl = await StorageService.instance.uploadFile(
-          file: _coverFile!,
-          path: 'tracks/$uid/$trackId/cover.jpg',
-          contentType: 'image/jpeg',
+        coverUrl = await CloudinaryService.instance.uploadImage(
+          _coverFile!,
           onProgress: (p) => setState(() => _progress = 0.8 + p * 0.2),
         );
       } else {

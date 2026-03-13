@@ -13,22 +13,61 @@ class CloudinaryService {
   Future<String> uploadVideo(
     File file, {
     void Function(double progress)? onProgress,
+  }) {
+    return _upload(
+      file: file,
+      resourceType: 'video',
+      folder: CloudinaryConfig.videoFolder,
+      onProgress: onProgress,
+    );
+  }
+
+  Future<String> uploadAudio(
+    File file, {
+    void Function(double progress)? onProgress,
+  }) {
+    // Se usa resource_type 'video' para mantener compatibilidad con el preset.
+    return _upload(
+      file: file,
+      resourceType: 'video',
+      folder: CloudinaryConfig.audioFolder,
+      onProgress: onProgress,
+    );
+  }
+
+  Future<String> uploadImage(
+    File file, {
+    void Function(double progress)? onProgress,
+  }) {
+    return _upload(
+      file: file,
+      resourceType: 'image',
+      folder: CloudinaryConfig.coverFolder,
+      onProgress: onProgress,
+    );
+  }
+
+  Future<String> _upload({
+    required File file,
+    required String resourceType,
+    required String folder,
+    void Function(double progress)? onProgress,
   }) async {
     const cloud = CloudinaryConfig.cloudName;
     const preset = CloudinaryConfig.uploadPresetVideo;
     if (cloud == 'YOUR_CLOUD_NAME' || preset == 'YOUR_UNSIGNED_VIDEO_PRESET') {
       throw StateError(
-        'Configura CloudinaryConfig.cloudName y CloudinaryConfig.uploadPresetVideo antes de subir videos.',
+        'Configura CloudinaryConfig.cloudName y CloudinaryConfig.uploadPresetVideo antes de subir archivos.',
       );
     }
 
     final uri = Uri.parse(
-      'https://api.cloudinary.com/v1_1/$cloud/video/upload',
+      'https://api.cloudinary.com/v1_1/$cloud/$resourceType/upload',
     );
 
     final request = http.MultipartRequest('POST', uri)
       ..fields['upload_preset'] = preset
-      ..fields['folder'] = CloudinaryConfig.videoFolder
+      ..fields['folder'] = folder
       ..files.add(await http.MultipartFile.fromPath('file', file.path));
 
     final streamed = await request.send();
