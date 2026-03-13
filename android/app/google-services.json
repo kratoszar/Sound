@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "224210839242",
+    "project_id": "soundwave-e5b26",
+    "storage_bucket": "soundwave-e5b26.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:224210839242:android:b28d9a33827d59f0fc7633",
+        "android_client_info": {
+          "package_name": "com.example.soundwave"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "224210839242-971pkq1gputgdu4o4qedagqt6nbj9j7i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.soundwave",
+            "certificate_hash": "3f90d3848c8e028ae3cf642d171261265b8f919c"
+          }
+        },
+        {
+          "client_id": "224210839242-aajguo64779d2b67o515gcn1rek162pm.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4tLZyC6I7EtTqnkNFRqSWppqMYvDpQmw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "224210839242-aajguo64779d2b67o515gcn1rek162pm.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "224210839242-3tl7fa90fikb8f4anep5t1l1jjjgfbeu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.soundwave"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
